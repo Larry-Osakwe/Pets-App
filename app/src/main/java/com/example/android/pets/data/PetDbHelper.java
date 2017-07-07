@@ -20,7 +20,7 @@ public class PetDbHelper extends SQLiteOpenHelper {
             "DROP TABLE IF EXISTS " + PetEntry.TABLE_NAME;
 
     public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "Shelter.db";
+    public static final String DATABASE_NAME = "shelter.db";
 
     public PetDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
