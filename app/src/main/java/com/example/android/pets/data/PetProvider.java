@@ -16,13 +16,21 @@ import com.example.android.pets.data.PetContract.PetEntry;
  */
 public class PetProvider extends ContentProvider {
 
-    /** URI matcher code for the content URI for the pets table */
+    /**
+     * URI matcher code for the content URI for the pets table
+     */
     public static final int PETS = 100;
 
-    /** URI matcher code for the content URI for a single pet in the pets table */
+    /**
+     * URI matcher code for the content URI for a single pet in the pets table
+     */
     public static final int PET_ID = 101;
-
-    /** URI matcher object to match a context URI to a corresponding code.
+    /**
+     * Tag for the log messages
+     */
+    public static final String LOG_TAG = PetProvider.class.getSimpleName();
+    /**
+     * URI matcher object to match a context URI to a corresponding code.
      * The input passed into the constructor represents the code to return for the root URI.
      * It's common to use NO_MATCH as the input for this case.
      */
@@ -49,12 +57,8 @@ public class PetProvider extends ContentProvider {
         sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY, PetContract.PATH_PETS + "/#", PET_ID);
     }
 
-
     //Database helper object
     private PetDbHelper mDbHelper;
-
-    /** Tag for the log messages */
-    public static final String LOG_TAG = PetProvider.class.getSimpleName();
 
     /**
      * Initialize the provider and the database helper object.
@@ -101,7 +105,7 @@ public class PetProvider extends ContentProvider {
                 // arguments that will fill in the "?". Since we have 1 question mark in the
                 // selection, we have 1 String in the selection arguments' String array.
                 selection = PetEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
                 // This will perform a query on the pets table where the _id equals 3 to return a
                 // Cursor containing that row of the table.
@@ -152,7 +156,6 @@ public class PetProvider extends ContentProvider {
         }
 
 
-
         //Insert a new pet into the pets database table with the given ContentValues
         // Get writeable database
 
@@ -186,7 +189,7 @@ public class PetProvider extends ContentProvider {
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = PetEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updatePet(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
@@ -251,7 +254,7 @@ public class PetProvider extends ContentProvider {
             case PET_ID:
                 // Delete a single row given by the ID in the URI
                 selection = PetEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return database.delete(PetEntry.TABLE_NAME, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Deletion is not supported for " + uri);
@@ -263,7 +266,15 @@ public class PetProvider extends ContentProvider {
      */
     @Override
     public String getType(Uri uri) {
-        return null;
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case PETS:
+                return PetEntry.CONTENT_LIST_TYPE;
+            case PET_ID:
+                return PetEntry.CONTENT_ITEM_TYPE;
+            default:
+                throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
+        }
     }
 
 
