@@ -1,6 +1,7 @@
 package com.example.android.pets;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.android.pets.data.PetContract.PetEntry;
@@ -29,11 +31,11 @@ public class CatalogActivity extends AppCompatActivity implements
     // This is the Adapter being used to display the list's data.
     private PetCursorAdapter mPetAdapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
+
 
         //Find the ListView that will be populated with pet data
         ListView petListView = (ListView) findViewById(R.id.list);
@@ -48,8 +50,26 @@ public class CatalogActivity extends AppCompatActivity implements
         //Attach adapter to the ListView
         petListView.setAdapter(mPetAdapter);
 
-        //Initialize the CursorLoader
-        getLoaderManager().initLoader(PET_LOADER, null, this);
+        // Set an item click listener on the ListView, which sends an intent to a web browser
+        // to open a website with more information about the selected earthquake.
+        petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                // Create a new intent to go to the {@link EditorActivity}
+                Intent petIntent = new Intent(CatalogActivity.this, EditorActivity.class);
+
+                // Form the content URI that represents the specific pet that was clicked on
+                Uri petUri = ContentUris.withAppendedId(PetEntry.CONTENT_URI, id);
+
+                // Set the URI on the dta field of the intent
+                petIntent.setData(petUri);
+
+                // Send the intent to launch a new activity
+                startActivity(petIntent);
+            }
+        });
+
 
         // Setup FAB to open EditorActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -61,6 +81,8 @@ public class CatalogActivity extends AppCompatActivity implements
             }
         });
 
+        //Initialize the CursorLoader
+        getLoaderManager().initLoader(PET_LOADER, null, this);
 
     }
 
