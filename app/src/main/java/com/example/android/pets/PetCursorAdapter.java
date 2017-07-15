@@ -2,6 +2,7 @@ package com.example.android.pets;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import com.example.android.pets.data.PetContract.PetEntry;
  * that uses a {@link Cursor} of pet data as its data source. This adapter knows
  * how to create list items for each row of pet data in the {@link Cursor}.
  */
-public class PetCursorAdapter extends CursorAdapter{
+public class PetCursorAdapter extends CursorAdapter {
 
     public PetCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
@@ -39,9 +40,15 @@ public class PetCursorAdapter extends CursorAdapter{
         TextView petDescription = (TextView) view.findViewById(R.id.summary);
 
         String name = cursor.getString(cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME));
-        String breed = cursor.getString(cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED));
+        String petBreed = cursor.getString(cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED));
 
+        // If the pet breed is empty string or null, then use some default text
+        // that says "Unknown breed", so the TextView isn't blank.
+        if (TextUtils.isEmpty(petBreed)) {
+            petBreed = context.getString(R.string.unknown_breed);
+        }
         petName.setText(name);
-        petDescription.setText(breed);
+        petDescription.setText(petBreed);
+
     }
 }
